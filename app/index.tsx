@@ -1,17 +1,19 @@
 import { Text } from "react-native";
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
+import { getAuth, User } from "firebase/auth";
 
 const index = () => {
-  useEffect(() => {
-    console.log(process.env.API_KEY);
-  }, []);
+  const auth = getAuth();
+  const user: User | null = auth.currentUser;
+
+  if (!user) return <Redirect href="/(auth)/Authentication" />;
 
   return (
     <SafeAreaView>
-      <Text>index</Text>
-      <Link href="/(auth)/Authentication">Login</Link>
+      <Text>Hello {user.displayName}</Text>
+      <Text>Hello {user.email}</Text>
     </SafeAreaView>
   );
 };

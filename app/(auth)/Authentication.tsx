@@ -9,27 +9,37 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
+import { useRouter } from "expo-router";
 export default function AuthenticationPage() {
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm();
-
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(true);
   const [visible, setVisible] = useState(false);
 
   async function signIn(data: FieldValues) {
-    //     setLoading(true);
-    //     try {
-    //       await auth().signInWithEmailAndPassword(data.email, data.password);
-    //     } catch (e: any) {
-    //       console.error("Sign in error: " + e);
-    //       alert("Sign in error: " + e);
-    //     } finally {
-    //       setLoading(false);
-    //     }
+    setLoading(true);
+    try {
+      const auth = getAuth(app);
+      const response = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+
+      Alert.alert("Logged in successfully", response.user.uid);
+      router.push("/");
+
+    } catch (err) {
+      const error = err as FirebaseError;
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function signUp(data: FieldValues) {
@@ -44,11 +54,14 @@ export default function AuthenticationPage() {
       );
 
       Alert.alert("User account created", response.user.uid);
+
+      router.push("/")
     } catch (err) {
       const error = err as FirebaseError;
       Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
