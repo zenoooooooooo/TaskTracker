@@ -29,6 +29,7 @@ export default function AuthenticationPage() {
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then(({ user }) => {
         Alert.alert("Logged in successfully", user.uid);
+        router.push("/");
       })
       .catch((err) => {
         const error = err as FirebaseError;
@@ -54,6 +55,7 @@ export default function AuthenticationPage() {
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then(({ user }) => {
         Alert.alert("User account created", user.uid);
+        router.push("/");
       })
       .catch((err) => {
         error = err as FirebaseError;
