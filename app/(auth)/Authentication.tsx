@@ -7,8 +7,10 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
+
 export default function AuthenticationPage() {
   const {
     control,
@@ -34,20 +36,27 @@ export default function AuthenticationPage() {
 
   async function signUp(data: FieldValues) {
     setLoading(true);
-    try {
-      const auth = getAuth(app);
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const response = await signInWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
+    let error;
+    const auth = getAuth(app);
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then(({ user }) => {
+        updateProfile(user, {
+          displayName: data.username,
+        });
+      })
+      .catch((err) => {
+        error = err as FirebaseError;
+        console.error(error.message);
+      });
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then(({ user }) => {
+        Alert.alert("User account created", user.uid);
+      })
+      .catch((err) => {
+        error = err as FirebaseError;
+        console.error(error.message);
+      });
 
-      Alert.alert("User account created", response.user.uid);
-    } catch (err) {
-      const error = err as FirebaseError;
-      Alert.alert("Error", error.message);
-    }
     setLoading(false);
   }
 
