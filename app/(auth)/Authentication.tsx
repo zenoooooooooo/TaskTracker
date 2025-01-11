@@ -7,9 +7,11 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { useRouter } from "expo-router";
+
 export default function AuthenticationPage() {
   const {
     control,
@@ -21,47 +23,44 @@ export default function AuthenticationPage() {
   const [login, setLogin] = useState(true);
   const [visible, setVisible] = useState(false);
 
-  async function signIn(data: FieldValues) {
+  function signIn(data: FieldValues) {
     setLoading(true);
-    try {
-      const auth = getAuth(app);
-      const response = await signInWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
-
-      Alert.alert("Logged in successfully", response.user.uid);
-      router.push("/");
-
-    } catch (err) {
-      const error = err as FirebaseError;
-      Alert.alert("Error", error.message);
-    } finally {
-      setLoading(false);
-    }
+    const auth = getAuth(app);
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then(({ user }) => {
+        Alert.alert("Logged in successfully", user.uid);
+      })
+      .catch((err) => {
+        const error = err as FirebaseError;
+        console.error(error.message);
+      });
   }
 
-  async function signUp(data: FieldValues) {
+  function signUp(data: FieldValues) {
     setLoading(true);
-    try {
-      const auth = getAuth(app);
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
-      const response = await signInWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
+    let error;
+    const auth = getAuth(app);
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then(({ user }) => {
+        updateProfile(user, {
+          displayName: data.username,
+        });
+      })
+      .catch((err) => {
+        error = err as FirebaseError;
+        console.error(error.message);
+      });
 
-      Alert.alert("User account created", response.user.uid);
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then(({ user }) => {
+        Alert.alert("User account created", user.uid);
+      })
+      .catch((err) => {
+        error = err as FirebaseError;
+        console.error(error.message);
+      });
 
-      router.push("/")
-    } catch (err) {
-      const error = err as FirebaseError;
-      Alert.alert("Error", error.message);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   }
 
   return (
