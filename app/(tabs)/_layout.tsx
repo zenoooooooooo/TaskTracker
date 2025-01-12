@@ -12,7 +12,9 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, name, focused }) => {
     <View className="items-center justify-center gap-2 pt-8">
       <Image source={icon} resizeMode="contain" className="w-8 h-8" />
       <Text
-        className={`${focused ? "font-bold" : "font-normal"} w-full text-white`}
+        className={`${
+          focused ? "font-bold text-yellow-400" : "font-normal"
+        } w-full text-white`}
       >
         {name}
       </Text>
@@ -56,6 +58,20 @@ const TabsLayout = () => {
             <TabIcon
               icon={require("@/assets/images/completed.png")}
               name="Completed"
+              focused={focused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Create"
+        options={{
+          title: "Create",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              icon={require("@/assets/images/create.png")}
+              name="Create"
               focused={focused}
             />
           ),

@@ -1,8 +1,8 @@
 import { Redirect } from "expo-router";
-import { getAuth, User } from "firebase/auth";
+import { User } from "firebase/auth";
+import { auth } from "@/firebaseConfig";
 
 const index = () => {
-  const auth = getAuth();
   const user: User | null = auth.currentUser;
 
   if (!user) return <Redirect href="/(auth)/Authentication" />;

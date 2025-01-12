@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Alert, SafeAreaView, Text, TextInput, View } from "react-native";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import { Button, Line } from "@/components";
-import app from "@/firebaseConfig";
+import { auth } from "@/firebaseConfig";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -25,7 +25,6 @@ export default function AuthenticationPage() {
 
   function signIn(data: FieldValues) {
     setLoading(true);
-    const auth = getAuth(app);
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then(({ user }) => {
         Alert.alert("Logged in successfully", user.uid);
@@ -40,7 +39,6 @@ export default function AuthenticationPage() {
   function signUp(data: FieldValues) {
     setLoading(true);
     let error;
-    const auth = getAuth(app);
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then(({ user }) => {
         updateProfile(user, {
